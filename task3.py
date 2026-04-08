@@ -1,66 +1,49 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
+import pandas as pd, matplotlib.pyplot as plt, matplotlib.ticker as mt
 from matplotlib.backends.backend_pdf import PdfPages
-from matplotlib.gridspec import GridSpec
 
-# ── โหลด & เตรียมข้อมูล ──────────────────────────────────────────────────────
-df = pd.read_csv('sales_transactions_cleaned.csv')
-df['date'] = pd.to_datetime(df['date']).dt.strftime('%Y-%m')
-df['revenue'] = (
-    df['quantity'] *
-    pd.to_numeric(df['price'].astype(str).str.replace('$', ''), errors='coerce')
-) - pd.to_numeric(df['discount_amount'], errors='coerce').fillna(0)
+# ── 1. โหลด & เตรียมข้อมูล (ยุบรวมไว้ใน Chain เดียว) ──────────────────────────
+d = pd.read_csv('sales_transactions_cleaned.csv')
+N = lambda c: pd.to_numeric(d[c].astype(str).str.replace('$', '', regex=False), errors='coerce').fillna(0)
+m = d.assign(date=pd.to_datetime(d['date']).dt.strftime('%Y-%m'), r=d.quantity * N('price') - N('discount_amount')) \
+     .groupby('date').agg(r=('r','sum'), t=('transaction_id','nunique')).assign(a=lambda x: x.r/x.t).reset_index()
 
-# ── Monthly Metrics ───────────────────────────────────────────────────────────
-m = (df.groupby('date')
-       .agg(rev=('revenue','sum'), tx=('transaction_id','nunique'))
-       .assign(aov=lambda x: x['rev']/x['tx'])
-       .sort_index().reset_index())
+t3 = m.nlargest(3,'r')[['date','r']].assign(r=lambda x: x.r.apply("${:,.0f}".format))
+plt.rcParams.update({'font.family':'DejaVu Sans', 'axes.spines.top':False, 'axes.spines.right':False})
 
-top3 = (m.nlargest(3,'rev')[['date','rev']]
-         .assign(rev=lambda x: x['rev'].apply(lambda v: f"${v:,.0f}")))
-
-# ── Style Helpers ─────────────────────────────────────────────────────────────
-# เปลี่ยน Hex เป็นชื่อสีทั้งหมด
-PALETTE   = ['royalblue', 'forestgreen', 'crimson'] 
-BG, GRID  = 'whitesmoke', 'lightgray'
-plt.rcParams.update({'font.family':'DejaVu Sans', 'axes.spines.top':False,
-                     'axes.spines.right':False})
-
-def style_ax(ax, title, color, y_fmt=None):
-    ax.set_facecolor(BG)
-    ax.set_title(title, fontsize=11, fontweight='bold', color='black', pad=8)
-    ax.grid(axis='y', color=GRID, linewidth=0.8, zorder=0)
-    ax.tick_params(axis='x', rotation=45, labelsize=7.5, colors='darkslategray')
-    ax.tick_params(axis='y', labelsize=7.5, colors='darkslategray')
-    if y_fmt: ax.yaxis.set_major_formatter(mticker.FuncFormatter(y_fmt))
-    # gradient fill under line
-    ys = ax.lines[0].get_ydata()
-    ax.fill_between(ax.lines[0].get_xdata(), ys, alpha=0.12, color=color)
-
-# ── Page 1 : 3 Line Charts ────────────────────────────────────────────────────
+# ── 2. สร้าง PDF ─────────────────────────────────────────────────────────────
 with PdfPages('Session1_SalesTrendsv7.pdf') as pdf:
-    fig = plt.figure(figsize=(10,11), facecolor='white')
-    fig.suptitle('Sales Trends Dashboard', fontsize=14, fontweight='bold',
-                 color='black', y=0.97)
-    gs = GridSpec(3, 1, figure=fig, hspace=0.55)
+    # --- หน้า 1 : กราฟเส้น (ใช้ zip รวบ Loop) ---
+    f, ax = plt.subplots(3, 1, figsize=(10, 11), facecolor='white'); f.subplots_adjust(hspace=0.55)
+    f.suptitle('Sales Trends Dashboard', fontsize=14, fontweight='bold', y=0.97)
 
-    specs = [
-        ('rev', PALETTE[0], 'Total Revenue',        lambda v,_: f'${v/1e3:.0f}K'),
-        ('tx',  PALETTE[1], 'Transactions',          lambda v,_: f'{v:,.0f}'),
-        ('aov', PALETTE[2], 'Avg Order Value (AOV)', lambda v,_: f'${v:,.0f}'),
-    ]
+    specs = zip(['r','t','a'], ['royalblue','forestgreen','crimson'], 
+                ['Total Revenue','Transactions','Avg Order Value (AOV)'],
+                [lambda v,_: f'${v/1e3:.0f}K', lambda v,_: f'{v:,.0f}', lambda v,_: f'${v:,.0f}'])
 
-    for i,(col,color,title,fmt) in enumerate(specs):
-        ax = fig.add_subplot(gs[i])
-        ax.plot(m['date'], m[col], color=color, lw=2.2,
-                marker='o', ms=4.5, markerfacecolor='white',
-                markeredgewidth=1.8, zorder=3)
-        style_ax(ax, title, color, fmt)
+    for a, c, cl, t, fm in zip(ax, *zip(*specs)):
+        a.plot(m.date, m[c], color=cl, lw=2.2, marker='o', ms=4.5, mfc='white', mew=1.8, zorder=3)
+        a.fill_between(m.date, m[c], alpha=0.12, color=cl)
+        a.set_facecolor('whitesmoke'); a.set_title(t, fontweight='bold', pad=8)
+        a.grid(axis='y', color='lightgray', zorder=0); a.tick_params('both', labelsize=7.5, colors='darkslategray')
+        a.tick_params('x', rotation=45); a.yaxis.set_major_formatter(mt.FuncFormatter(fm))
+        
+    pdf.savefig(f, bbox_inches='tight'); plt.close()
 
-    pdf.savefig(fig, bbox_inches='tight')
-    plt.close()
+    # --- หน้า 2 : ตาราง (ย่อคำสั่งลงสีแบบบรรทัดเดียว) ---
+    f, a = plt.subplots(figsize=(6, 2.2), facecolor='white'); a.axis('off')
+    a.set_title('Top 3 Revenue Months', fontsize=12, fontweight='bold', pad=10)
+    
+    tb = a.table(cellText=t3.values, colLabels=['Month','Total Revenue'], loc='center', cellLoc='center')
+    tb.auto_set_font_size(False); tb.set_fontsize(10); tb.scale(1, 2.2)
+
+    for (r, c), cl in tb.get_celld().items():
+        cl.set_edgecolor('lightgray')
+        cl.set_facecolor('darkblue' if r==0 else 'aliceblue' if r%2==0 else 'white') # รวบ If-Else
+        if r==0: cl.set_text_props(color='white', weight='bold')
+
+    pdf.savefig(f, bbox_inches='tight'); plt.close()
+
+print("✅ PDF สร้างเรียบร้อย (เวอร์ชันย่อสุดๆ)!")
 
     # ── Page 2 : Top-3 Table ──────────────────────────────────────────────────
     fig, ax = plt.subplots(figsize=(6, 2.2), facecolor='white')
