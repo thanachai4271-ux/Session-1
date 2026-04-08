@@ -11,7 +11,7 @@ t3 = m.nlargest(3,'r')[['date','r']].assign(r=lambda x: x.r.apply("${:,.0f}".for
 plt.rcParams.update({'font.family':'DejaVu Sans', 'axes.spines.top':False, 'axes.spines.right':False})
 
 # ── 2. สร้าง PDF (รวมกราฟและตารางในหน้าเดียว) ──────────────────────────────────
-with PdfPages('Session1_SalesTrendsv9.pdf') as pdf:
+with PdfPages('Session1_SalesTrendsv8.pdf') as pdf:
     # แบ่งกระดาษเป็น 4 แถว (3 แถวแรกเป็นกราฟ, แถวสุดท้ายเป็นตาราง)
     f, ax = plt.subplots(4, 1, figsize=(10, 14), facecolor='white', gridspec_kw={'height_ratios': [1, 1, 1, 0.7]})
     f.subplots_adjust(hspace=0.65) # เพิ่มช่องไฟระหว่างแถว
@@ -31,7 +31,7 @@ with PdfPages('Session1_SalesTrendsv9.pdf') as pdf:
         
     # --- ส่วนที่ 2: สร้างตารางลงใน ax ตัวสุดท้าย (ax[3]) ---
     ax[3].axis('off')
-    ax[3].set_title('Top 3 Revenue Months', fontsize=12, fontweight='bold', pad=10)
+    ax[3].set_title('🏆 Top 3 Revenue Months', fontsize=12, fontweight='bold', pad=10)
     
     tb = ax[3].table(cellText=t3.values, colLabels=['Month','Total Revenue'], loc='center', cellLoc='center')
     tb.auto_set_font_size(False); tb.set_fontsize(10); tb.scale(0.8, 2) # ปรับ scale ความกว้างตารางให้สวยงาม
