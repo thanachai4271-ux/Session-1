@@ -4,8 +4,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 # ── 1. โหลด & เตรียมข้อมูล ──────────────────────────────────────────────────
 d = pd.read_csv('sales_transactions_cleaned.csv')
 N = lambda c: pd.to_numeric(d[c].astype(str).str.replace('$', '', regex=False), errors='coerce').fillna(0)
-m = d.assign(date=pd.to_datetime(d['date']).dt.strftime('%Y-%m'), r=d.quantity * N('price') - N('discount_amount')) \
-     .groupby('date').agg(r=('r','sum'), t=('transaction_id','nunique')).assign(a=lambda x: x.r/x.t).reset_index()
+m = d.assign(date=pd.to_datetime(d['date']).dt.strftime('%Y-%m'), r=d.quantity * N('price') - N('discount_amount')).groupby('date').agg(r=('r','sum'), t=('transaction_id','nunique')).assign(a=lambda x: x.r/x.t).reset_index()
 
 t3 = m.nlargest(3,'r')[['date','r']].assign(r=lambda x: x.r.apply("${:,.0f}".format))
 plt.rcParams.update({'font.family':'DejaVu Sans', 'axes.spines.top':False, 'axes.spines.right':False})
