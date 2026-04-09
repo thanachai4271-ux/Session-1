@@ -1,5 +1,4 @@
-import pandas as pd, matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
+import pandas as pd, matplotlib.pyplot as plt; from matplotlib.backends.backend_pdf import PdfPages
 
 d = pd.read_csv('sales_transactions_cleaned.csv')
 N = lambda c: pd.to_numeric(d[c].astype(str).str.replace('$', '', regex=False), errors='coerce').fillna(0)
