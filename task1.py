@@ -3,7 +3,7 @@ v = {f: pd.read_csv(f) for f in ['sales_transactions.csv', 'products.csv', 'cust
 r = ""
 for n, d in v.items():
     S, T, N, c = lambda x: d[x].astype(str).str, ['True','False','Nan'], [0]*len(d), n[0]
-    r += f"### File: {n}\n\nHead:\n{d.head().to_string()}\n\nData Types:\n" + "\n".join(f"- {k}: {t}" for k, t in d.dtypes.items()) + "\n\nInconsistencies:\n"
+    r += f"### File: {n}\n\n{d.head().to_string()}\n\nData Types:\n" + "\n".join(f"- {k}: {t}" for k, t in d.dtypes.items()) + "\n\nInconsistencies:\n"
     
     dc = [x for x in d if 'date' in x.lower()]
     dm = pd.concat([pd.to_datetime(d[x], errors='coerce').dt.year.between(2010,2025)!=True for x in dc], axis=1).any(axis=1) if dc else N
