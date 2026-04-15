@@ -11,9 +11,8 @@ for n, d in v.items():
     nc = [x for x in d if x in ['quantity','price','cost']]
     nm = pd.concat([pd.to_numeric(S(x).replace(r'\$','',regex=True), errors='coerce')<0 for x in nc], axis=1).any(axis=1) if nc else N
     im = (~d['customer_id'].isin(v['customers.csv']['customer_id']) | ~d['product_id'].isin(v['products.csv']['product_id'])) if c=='s' else N
-    um = (~d['gender'].isin(['M','F',pd.NA]) | ~S('membership_status').title().isin(['Basic','Silver','Gold','Nan']) | ~S('churned').title().isin(T)) if c=='c' else (~d['category'].isin(['Pastries','Bread','Tarte','Viennoiserie','Pastry',pd.NA]) | ~S('seasonal').title().isin(T) | ~S('active').title().isin(T)) if c=='p' else (~d['payment_method'].isin(['Credit Card','Mobile Pay','Cash',pd.NA]) | ~d['channel'].isin(['Online','In-store',pd.NA]))
-    fm = (S('first_name').contains(r'^\s|\s$') | S('email').contains(r'[A-Z]') | S('phone_number').contains(r'[a-zA-Z\^<|>@]')) if c=='c' else (~S('cost').contains(r'\$') | ~S('price').contains(r'\$')) if c=='p' else N
+    um = (~d['gender'].isin(['M','F',pd.NA]) | S('phone_number').contains(r'[a-zA-Z\^<|>@]') | ~d['preferred_category'].isin(['Pastries','Bread','To Be Determined','Tarte','Viennoiserie','Pastry','Macaron',pd.NA]) | ~S('churned').title().isin(T)) if c=='c' else (~d['category'].isin(['Pastries','Bread','Tarte','Viennoiserie','Pastry',pd.NA]) | ~S('seasonal').title().isin(T) | ~S('active').title().isin(T)) if c=='p' else N
+    fm = (S('first_name').contains(r'[^a-zA-Z]') | S('email').contains(r'[A-Z]') | ~d['membership_status'].isin(['Basic','Silver','Gold',pd.NA])) if c=='c' else (S('product_name').contains(r'[^a-zA-Z]') | ~S('price').contains(r'\$') | ~S('cost').contains(r'\$')) if c=='p' else N
          
     r += f"- Invalid Dates: {sum(dm)}\n- Neg Values: {sum(nm)}\n- Invalid IDs: {sum(im)}\n- Unexpected: {sum(um)}\n- Format Issues: {sum(fm)}\n{'-'*30}\n\n"
-
 open('Session1_DataExploration.txt', 'w', encoding='utf-8').write(r.strip())
