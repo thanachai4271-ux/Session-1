@@ -7,7 +7,7 @@ p['profit'],p['category'] = p['price_c'] - p['cost_c'], p.category.replace({'Pas
 m = s.assign(r=s.quantity * s.price - s.discount_amount.fillna(0)).merge(p[['product_id','product_name','category','profit']],on='product_id',how='left')
 t3 = m.groupby('product_name')[['quantity','r']].sum().nlargest(3,'quantity').reset_index().assign(r=lambda x:  x.r.apply('${:,.2f}'.format)).set_axis(['Product Name','Total Quantity Sold','Total Revenue'],axis=1)
 
-with PdfPages('per.pdf') as pdf:
+with PdfPages('Session1_ProductPerformance.pdf') as pdf:
 	f,ax = plt.subplots(figsize=(10,5))
 	
 	m[m.category.isin(['Pastries','Bread','Tarte'])].groupby('category')['r'].sum().plot.bar(color=['lightpink','lightgreen','lightblue'],ax=ax,title='Total Revenue by Category',ylabel='Total Revenue',xlabel='Category',rot=0); ax.tick_params('x',rotation=45); ax.grid(axis='y',ls='--')
