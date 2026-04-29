@@ -5,9 +5,7 @@ c = pd.read_csv('customers_cleaned.csv')
 c['m'] = c['membership_status'].str.title()
 
 with PdfPages('Session1_CustomerAnalysis_short.pdf') as pdf:
-    # 1. Bar Chart: ใช้ชื่อเต็ม + Grid แกน Y
-    ax = pd.cut(c['age'], [17,24,34,44,200], labels=['18-24','25-34','35-44','45+']).value_counts().sort_index().plot.bar(title='Distribution of Customer Age Groups', rot=0)
-    ax.set_ylabel('Number of Customers'); ax.grid(axis='y', ls='--', alpha=0.5)
+    ax = pd.cut(c['age'], [17,24,34,44,200], labels=['18-24','25-34','35-44','45+']).value_counts().sort_index().plot.bar(title='Distribution of Customer Age Groups', rot=0); ax.set_ylabel('Number of Customers'); ax.grid(axis='y', ls='--', alpha=0.5)
     pdf.savefig(plt.gcf(), bbox_inches='tight'); plt.close()
 
     # Data Prep
