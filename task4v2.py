@@ -1,13 +1,11 @@
 import pandas as pd,matplotlib.pyplot as plt; from matplotlib.backends.backend_pdf import PdfPages
 
 s,p = pd.read_csv('sales_transactions_cleaned.csv'), pd.read_csv('products.csv')
-clean = lambda x: pd.to_numeric(x.astype(str).str.replace(r'[^0-9.\-]','',regex=True),errors='coerce').abs()
-p['price_c'] = clean(p['price']); p['cost_c'] = clean(p['cost'])
-p['profit'],p['category'] = p['price_c'] - p['cost_c'], p.category.replace({'Pastry' : 'Pastries'})
-m = s.assign(r=s.quantity * s.price - s.discount_amount.fillna(0)).merge(p[['product_id','product_name','category','profit']],on='product_id',how='left')
+p['category'] = p.category.replace({'Pastry' : 'Pastries'})
+m = s.assign(r=s.quantity * s.price - s.discount_amount.fillna(0)).merge(p,on='product_id',how='left')
 t3 = m.groupby('product_name')[['quantity','r']].sum().nlargest(3,'quantity').reset_index().assign(r=lambda x:  x.r.apply('${:,.2f}'.format)).set_axis(['Product Name','Total Quantity Sold','Total Revenue'],axis=1)
 
-with PdfPages('Session1_ProductPerformance.pdf') as pdf:
+with PdfPages('Session1_ProductPerformancev2.pdf') as pdf:
 	f,ax = plt.subplots(figsize=(10,5))
 	
 	m[m.category.isin(['Pastries','Bread','Tarte'])].groupby('category')['r'].sum().plot.bar(color=['lightpink','lightgreen','lightblue'],ax=ax,title='Total Revenue by Category',ylabel='Total Revenue',xlabel='Category',rot=0); ax.tick_params('x',rotation=45); ax.grid(axis='y',ls='--')
