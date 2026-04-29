@@ -8,10 +8,10 @@ t3 = m.groupby('product_name')[['quantity','r']].sum().nlargest(3,'quantity').re
 with PdfPages('per.pdf') as pdf:
 	f,ax = plt.subplots(figsize=(10,5))
 	
-	m[m.category.isin(['Pastries','Bread','Tarte'])].groupby('category')['r'].sum().plot.bar(color=['lightpink','lightgreen','lightblue'],ax=ax,title='Total Revenue by Category',ylabel='Total Revenue',xlabel='Category',rot=0); ax.set_axisbelow(True); ax.tick_params('x',rotation=45); ax.grid(axis='y',ls='--')
+	m[m.category.isin(['Pastries','Bread','Tarte'])].groupby('category')['r'].sum().plot.bar(color=['lightpink','lightgreen','lightblue'],ax=ax,title='Total Revenue by Category',ylabel='Total Revenue',xlabel='Category',rot=0); ax.tick_params('x',rotation=45); ax.grid(axis='y',ls='--')
 	pdf.savefig(f,bbox_inches='tight'); plt.close()
 	
-	f,ax = plt.subplots(figsize=(10,5))
+	f,ax = plt.subplots(figsize=(7,4))
 
 	ax.axis('off'); ax.set_title('Top 3 Best Selling Products',weight='bold',y=0.85); ax.table(cellText=t3.values,colLabels=t3.columns,loc='center',cellLoc='center').scale(1,2)
 	pdf.savefig(f,bbox_inches='tight'); plt.close()
