@@ -5,7 +5,7 @@ m = (d.assign(date=pd.to_datetime(d['date']).dt.strftime('%Y-%m'), r=(d.quantity
 t3 = m.nlargest(3, 'r')[['date','r']].assign(r=lambda x: x.r.apply("${:,.2f}".format))
 data = [('r','tomato','Total Sales Revenue ($)'),('t','steelblue','Number of Transactions'),('a','seagreen','Average Order Value ($)')]
 
-with PdfPages('Session1_SalesTrendsv2.pdf') as pdf:
+with PdfPages('Session1_SalesTrends.pdf') as pdf:
     for c, cl, t in data:
         fig, ax = plt.subplots(figsize=(10, 5)) 
         ax.plot(m.date, m[c], marker='o', color=cl,); ax.set_xlabel('Month'); ax.set_title(t, weight='bold'); ax.tick_params('x', rotation=45); ax.grid(axis='y', ls='--')
