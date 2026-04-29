@@ -1,7 +1,7 @@
 import pandas as pd,matplotlib.pyplot as plt; from matplotlib.backends.backend_pdf import PdfPages
 
 s,p = pd.read_csv('sales_transactions_cleaned.csv'), pd.read_csv('products.csv')
-clean = lambda col: pd.to_numeric(col.astype(str).str.replace(r'[^0-9.\-]','',regex=True),errors='coerce').abs()
+clean = lambda x: pd.to_numeric(x.astype(str).str.replace(r'[^0-9.\-]','',regex=True),errors='coerce').abs()
 p['price_c'] = clean(p['price']); p['cost_c'] = clean(p['cost'])
 p['profit'],p['category'] = p['price_c'] - p['cost_c'], p.category.replace({'Pastry' : 'Pastries'})
 m = s.assign(r=s.quantity * s.price - s.discount_amount.fillna(0)).merge(p[['product_id','product_name','category','profit']],on='product_id',how='left')
