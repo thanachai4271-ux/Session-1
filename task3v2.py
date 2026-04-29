@@ -8,7 +8,7 @@ data = [('r','tomato','Total Sales Revenue ($)'),('t','steelblue','Number of Tra
 with PdfPages('Session1_SalesTrendsv2.pdf') as pdf:
     for c, cl, t in data:
         fig, ax = plt.subplots(figsize=(10, 5)) 
-        ax.plot(m.date, m[c], marker='o', color=cl); ax.set_title(t, weight='bold'); ax.tick_params('x', rotation=45); ax.grid(axis='y', ls='--')
+        ax.plot(m.date, m[c], marker='o', color=cl,); ax.set_xlabel('Month'); ax.set_title(t, weight='bold'); ax.tick_params('x', rotation=45); ax.grid(axis='y', ls='--')
         if c in ['r', 'a']:
             ax.yaxis.set_major_formatter(StrMethodFormatter('${x:,.0f}'))
         pdf.savefig(fig, bbox_inches='tight'); plt.close(fig) 
