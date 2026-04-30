@@ -12,7 +12,7 @@ with PdfPages('Session1_CustomerAnalysis_short.pdf') as pdf:
 
     items = [('Gender Distribution (%)', g, ['Gender', 'Percentage (%)']),('Average Spending per Loyalty Tier', t, ['Tier', 'Avg Spending ($)'])]
     
-    for title, df, cols in items:
+    for t, df, c in items:
         fig, ax = plt.subplots(figsize=(6,2))
-        ax.axis('off'); ax.set_title(title, fontsize=13, fontweight='bold', pad=16); ax.table(cellText=df.values, colLabels=cols, loc='center', cellLoc='center').scale(1,2)
+        ax.axis('off'); ax.set_title(t,weight='bold'); ax.table(cellText=df.values, colLabels=c, loc='center', cellLoc='center').scale(1,2)
         pdf.savefig(fig, bbox_inches='tight'); plt.close()
