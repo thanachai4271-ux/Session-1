@@ -1,4 +1,4 @@
-import pandas as pd,matplotlib.pyplot as plt; from matplotlib.backends.backend_pdf import PdfPages
+import pandas as pd,matplotlib.pyplot as plt; from matplotlib.backends.backend_pdf import PdfPages import matplotlib.ticker as StrMethodFormatter
 
 s,p = pd.read_csv('sales_transactions_cleaned.csv'), pd.read_csv('products.csv')
 p['category'] = p.category.replace({'Pastry' : 'Pastries'})
@@ -8,7 +8,7 @@ t3 = m.groupby('product_name')[['quantity','r']].sum().nlargest(3,'quantity').re
 with PdfPages('Session1_ProductPerformancev2.pdf') as pdf:
 	f,ax = plt.subplots(figsize=(10,5))
 	
-	m[m.category.isin(['Pastries','Bread','Tarte'])].groupby('category')['r'].sum().plot.bar(color=['lightpink','lightgreen','lightblue'],ax=ax,title='Total Revenue by Category',ylabel='Total Revenue',xlabel='Category',rot=0); ax.tick_params('x',rotation=45); ax.grid(axis='y',ls='--')
+	m[m.category.isin(['Pastries','Bread','Tarte'])].groupby('category')['r'].sum().plot.bar(color=['lightpink','lightgreen','lightblue'],ax=ax,title='Total Revenue by Category',ylabel='Total Revenue',xlabel='Category',rot=0); ax.tick_params('x',rotation=45); ax.grid(axis='y',ls='--'); ax.yaxis.set_major_formatter(StrMethodFormatter('${x:,.0f}'))
 	pdf.savefig(f,bbox_inches='tight'); plt.close()
 	
 	f,ax = plt.subplots(figsize=(7,4))
