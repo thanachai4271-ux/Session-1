@@ -1,4 +1,4 @@
-import pandas as pd, warnings; from statsmodels.tsa.arima.model import ARIMA; from sklearn.metrics import mean_absolute_error as E; warnings.filterwarnings('ignore')
+import pandas as pd; from statsmodels.tsa.arima.model import ARIMA
 
 s = pd.read_csv('sales_transactions_cleaned.csv')
 s['date'] = pd.to_datetime(s['date']).dt.normalize()
