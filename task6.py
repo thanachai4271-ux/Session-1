@@ -2,7 +2,7 @@ import pandas as pd, warnings; from statsmodels.tsa.arima.model import ARIMA; fr
 
 s = pd.read_csv('sales_transactions_cleaned.csv')
 s['date'] = pd.to_datetime(s['date']).dt.normalize()
-d = s.assign(r=s.quantity*s.price-pd.to_numeric(s.discount_amount,'coerce').fillna(0)).groupby('date')['r'].sum().sort_index()
+d = s.assign(r=s.quantity*s.price-s.discount_amount.fillna(0)).groupby('date')['r'].sum().sort_index()
 
 p = int(len(d)*.8); f = lambda x,n: ARIMA(x,order=(1,1,1)).fit().forecast(steps=n)
 
