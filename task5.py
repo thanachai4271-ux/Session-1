@@ -3,7 +3,7 @@ import pandas as pd, matplotlib.pyplot as plt; from matplotlib.backends.backend_
 c = pd.read_csv('customers_cleaned.csv')
 
 with PdfPages('Session1_CustomerAnalysis_short.pdf') as pdf:
-    ax = pd.cut(c['age'], [17,24,34,44,200], labels=['18-24','25-34','35-44','45+']).value_counts().sort_index().plot.bar(title='Distribution of Customer Age Groups',ylabel='Number of Customers', rot=0)
+    ax = pd.cut(c['age'], [17,24,34,44,200], labels=['18-24','25-34','35-44','45+']).value_counts().sort_index().plot.bar(title='Distribution of Customer Age Groups',ylabel='Number of Customers', rot=0); ax.grid(axis='y',ls='--')
     pdf.savefig(plt.gcf(), bbox_inches='tight'); plt.close()
     
     g = c[c['gender'].isin(['M','F'])]['gender'].value_counts(normalize=True).mul(100).map('{:.2f}%'.format).reset_index()
