@@ -1,7 +1,7 @@
 import pandas as pd, matplotlib.pyplot as plt; from matplotlib.backends.backend_pdf import PdfPages; from matplotlib.ticker import StrMethodFormatter
 
 d = pd.read_csv('sales_transactions_cleaned.csv')
-m = (d.assign(date=pd.to_datetime(d['date']).dt.strftime('%Y-%m'), r=(d.quantity * d.price) - d.discount_amount.fillna(0)).groupby('date').agg(r=('r','sum'), t=('transaction_id','nunique')).assign(a=lambda x: x.r/x.t).sort_index().reset_index())
+m = (d.assign(date=pd.to_datetime(d['date']).dt.strftime('%Y-%m'), r=(d.quantity * d.price) - d.discount_amount.fillna(0)).groupby('date').agg(r=('r','sum'), t=('transaction_id','nunique')).assign(a=lambda x: x.r/x.t).reset_index())
 t3 = m.nlargest(3, 'r')[['date','r']].assign(r=lambda x: x.r.apply("${:,.2f}".format))
 data = [('r','tomato','Total Sales Revenue ($)'),('t','steelblue','Number of Transactions'),('a','seagreen','Average Order Value ($)')]
 
@@ -13,6 +13,6 @@ with PdfPages('Session1_SalesTrends.pdf') as pdf:
             ax.yaxis.set_major_formatter(StrMethodFormatter('${x:,.0f}'))
         pdf.savefig(fig, bbox_inches='tight'); plt.close(fig) 
 
-    fig_table, ax_table = plt.subplots(figsize=(7, 4))
+    fig_table, ax_table = plt.subplots(figsize=(6, 2))
     ax_table.axis('off'); ax_table.set_title('Top 3 Months', weight='bold', pad=20); ax_table.table(cellText=t3.values, colLabels=['Month', 'Total Revenue'], loc='center', cellLoc='center').scale(1, 2)
     pdf.savefig(fig_table, bbox_inches='tight'); plt.close(fig_table)
