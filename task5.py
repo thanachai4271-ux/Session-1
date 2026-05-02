@@ -6,8 +6,8 @@ with PdfPages('Session1_CustomerAnalysis_short.pdf') as pdf:
     ax = pd.cut(c['age'], [17,24,34,44,200], labels=['18-24','25-34','35-44','45+']).value_counts().sort_index().plot.bar(title='Distribution of Customer Age Groups',ylabel='Number of Customers', rot=0)
     pdf.savefig(plt.gcf(), bbox_inches='tight'); plt.close()
     
-    g = c[c['gender'].isin(['M','F'])]['gender'].value_counts(normalize=True).mul(100).round(2).map('{:.2f}%'.format).reset_index()
-    t = c[c['membership_status'].isin(['Basic','Silver','Gold'])].groupby('membership_status')['total_spending'].mean().reindex(['Basic','Silver','Gold']).map('${:,.0f}'.format).reset_index()
+    g = c[c['gender'].isin(['M','F'])]['gender'].value_counts(normalize=True).mul(100).map('{:.2f}%'.format).reset_index()
+    t = c[c['membership_status'].isin(['Basic','Silver','Gold'])].groupby('membership_status')['total_spending'].mean().map('${:,.2f}'.format).reset_index()
 
     data = [('Gender Distribution (%)', g, ['Gender', 'Percentage (%)']),('Average Spending per Loyalty Tier', t, ['Tier', 'Avg Spending ($)'])]
     for title, df, col in data:
