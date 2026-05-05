@@ -7,12 +7,12 @@ data = [('r','tomato','Total Sales Revenue ($)'),('t','steelblue','Number of Tra
 
 with PdfPages('Session1_SalesTrends.pdf') as pdf:
     for c, cl, t in data:
-        fig, ax = plt.subplots(figsize=(10, 5)) 
+        f, ax = plt.subplots(figsize=(10, 5)) 
         ax.plot(m.date, m[c], marker='o', color=cl,); ax.set_xlabel('Month'); ax.set_title(t, weight='bold'); ax.tick_params('x', rotation=45); ax.grid(axis='y', ls='--')
         if c in ['r', 'a']:
             ax.yaxis.set_major_formatter(StrMethodFormatter('${x:,.0f}'))
-        pdf.savefig(fig, bbox_inches='tight'); plt.close(fig) 
+        pdf.savefig(f, bbox_inches='tight'); plt.close() 
 
-    fig_table, ax_table = plt.subplots(figsize=(6, 2))
+    f, ax_table = plt.subplots(figsize=(6, 2))
     ax_table.axis('off'); ax_table.set_title('Top 3 Months', weight='bold', pad=20); ax_table.table(cellText=t3.values, colLabels=['Month', 'Total Revenue'], loc='center', cellLoc='center').scale(1, 2)
-    pdf.savefig(fig_table, bbox_inches='tight'); plt.close(fig_table)
+    pdf.savefig(f, bbox_inches='tight'); plt.close()
