@@ -11,5 +11,6 @@ with PdfPages('Session1_ProductPerformancev2.pdf') as pdf:
     ax = m[m.category.isin(['Pastries','Bread','Tarte'])].groupby('category')['r'].sum().plot.bar(title='Total Revenue by Category',ylabel='Total Revenue',xlabel='Category',rot=0); ax.tick_params('x',rotation=45); ax.grid(axis='y',ls='--'); ax.yaxis.set_major_formatter(StrMethodFormatter('${x:,.0f}'))
     pdf.savefig(plt.gcf(),bbox_inches='tight'); plt.close()
     
-    f, ax = plt.subplots(figsize=(6,2)); ax.axis('off'); ax.set_title('Top 3 Best Selling Products',weight='bold'); ax.table(cellText=t3.values,colLabels=t3.columns,loc='center',cellLoc='center').scale(1,2)
+    f, ax = plt.subplots(figsize=(6,2))
+    ax.axis('off'); ax.set_title('Top 3 Best Selling Products',weight='bold'); ax.table(cellText=t3.values,colLabels=t3.columns,loc='center',cellLoc='center').scale(1,2)
     pdf.savefig(f,bbox_inches='tight'); plt.close()
