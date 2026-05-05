@@ -2,7 +2,7 @@ import pandas as pd, numpy as np
 s, p = pd.read_csv('sales_transactions_cleaned.csv'), pd.read_csv('products.csv')
 
 s['r'] = s.quantity * s.price - s.discount_amount.fillna(0)
-p['c'] = pd.to_numeric(p.cost.astype(str).str.replace(r'[^0-9.\-]', '', regex=1), 'coerce')
+p['c'] = pd.to_numeric(p.cost.astype(str).str.replace(r'[^0-9+]', '', regex=1), 'coerce')
 
 f = s.groupby('product_id', as_index=0).agg(total_quantity_sold=('quantity','sum'), total_revenue=('r','sum')).merge(p[['product_id','c']])
 f['profit_margin'] = (1 - f.total_quantity_sold * f.c / f.total_revenue).round(4)
