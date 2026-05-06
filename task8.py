@@ -5,7 +5,7 @@ s['r'] = s.quantity * s.price - s.discount_amount.fillna(0)
 p['c'] = pd.to_numeric(p.cost.astype(str).str.replace(r'[^0-9./-]', '', regex=1), 'coerce')
 
 f = s.groupby('product_id', as_index=0).agg(tqs=('quantity','sum'), tr=('r','sum')).merge(p[['product_id','c']])
-f['profit_margin'] = (1 - f.total_quantity_sold * f.c / f.total_revenue).round(4)
+f['profit_margin'] = (1 - f.tqs * f.c / f.tr).round(4)
 f.drop(columns='c').sort_values('total_revenue', ascending=0).round(2).to_csv('Session5_Product_Performance_short_short.csv', index=0)
 
 g = s.assign(m=pd.to_datetime(s.date).dt.strftime('%Y-%m')).groupby(['product_id','m']).agg(q=('quantity','sum'), v=('price','mean')).groupby('product_id')
