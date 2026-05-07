@@ -1,4 +1,4 @@
-import pandas as pd; from statsmodels.tsa.arima.model import ARIMA
+import pandas as pd; from statsmodels.tsa.arima.model import ARIMA; import warnings; warnings.filterwarnings('ignore')
 
 s = pd.read_csv('sales_transactions_cleaned.csv')
 s['date'] = pd.to_datetime(s['date']).dt.normalize()
