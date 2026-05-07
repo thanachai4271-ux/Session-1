@@ -1,4 +1,4 @@
-import pandas as pd; from sklearn.cluster import KMeans; from sklearn.preprocessing import StandardScaler
+import pandas as pd; from sklearn.cluster import KMeans; from sklearn.preprocessing import StandardScaler; import warnings; warnings.filterwarnings('ignore')
 
 s = pd.read_csv('sales_transactions_cleaned.csv')
 f = s.assign(r=s.quantity*s.price-s.discount_amount.fillna(0)).groupby('customer_id').agg(t=('transaction_id','nunique'), r=('r','mean')).reset_index()
