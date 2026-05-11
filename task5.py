@@ -1,6 +1,7 @@
 import pandas as pd, matplotlib.pyplot as plt; from matplotlib.backends.backend_pdf import PdfPages
 
 c = pd.read_csv('customers_cleaned.csv')
+c['membership_status'] = c['membership_status'].str.title()
 
 with PdfPages('Session1_CustomerAnalysis_short.pdf') as pdf:
     ax = pd.cut(c['age'], [17,24,34,44,200], labels=['18-24','25-34','35-44','45+']).value_counts().sort_index().plot.bar(title='Distribution of Customer Age Groups',ylabel='Number of Customers', rot=0); ax.grid(axis='y',ls='--')
